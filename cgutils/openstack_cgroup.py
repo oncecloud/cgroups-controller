@@ -8,8 +8,10 @@ class ValOutofRanege(Exception):
     pass
 class kvmCgroup(cgroup.CGroup):
     def __init__(self, kvmname, subsystem):
+        if kvmname.find("-") != -1:
+            kvmname = kvmname.split('-')[1]
         self.kvmname = kvmname
-        subsystemPath = cgroup.SubsystemStatus().paths[subsystem]
+        subsystemPath = os.path.join(cgroup.SubsystemStatus().paths[subsystem], "machine.slice")
         fullPath = fileops.find(kvmname, subsystemPath)
         if not fullPath:
             self.cgroup = False

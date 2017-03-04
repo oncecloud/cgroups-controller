@@ -1,4 +1,5 @@
 import kvm_cgroup
+import openstack_cgroup
 import docker_cgroup
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from SocketServer import ThreadingMixIn
@@ -55,11 +56,13 @@ class MainHandler(BaseHTTPRequestHandler):
                                 if len(vals)== 3:
                                     disk.diskreadlimit(int(vals[2]))
                                 else:
+                                    vals[3]=vals[3].replace("%2F", "/")
                                     disk.diskreadlimit(int(vals[2]),vals[3])
                             elif vals[1] == 'write':
                                 if len(vals) == 3:
                                     disk.diskwritelimit(int(vals[2]))
                                 else:
+                                    vals[3]=vals[3].replace("%2F", "/")
                                     disk.diskwritelimit(int(vals[2]), vals[3])
                     elif modules[3] == 'unset':
                         vals = modules[4].split('&')
@@ -67,14 +70,86 @@ class MainHandler(BaseHTTPRequestHandler):
                             undisk = kvm_cgroup.kvmDiskLimit(vals[0])
                             if vals[1] == 'read':
                                 if len(vals) == 3:
+                                    vals[2]=vals[2].replace("%2F", "/")
                                     undisk.diskreadunset(vals[2])
                                 else:
                                     undisk.diskreadunset()
                             if vals[1] == 'write':
                                 if len(vals) == 3:
+                                    vals[2]=vals[2].replace("%2F", "/")
+                                    undisk.diskwriteunset(vals[2])
+                                else:
+                                    undisk.diskwriteunset()
+                    else:
+                        self.send_error(404, "api not found")
+                        
+            elif modules[1] == 'openstack':
+                if modules[2] == 'cpu':
+                    if modules[3] == 'set':
+                        vals = modules[4].split("&")
+                        if len(vals) == 2:
+                            cpu = openstack_cgroup.kvmCpuLimit(vals[0])
+                            cpu.cpulimit(vals[1])
+                    elif modules[3] == 'unset':
+                        uncpu = openstack_cgroup.kvmCpuLimit(modules[4])
+                        uncpu.cpuunset()
+                    else:
+                        self.send_error(404, "api not found")
+                elif modules[2] == 'cpuset':
+                    if modules[3] == 'set':
+                        vals = modules[4].split("&")
+                        if len(vals) == 2:
+                            cpuset = openstack_cgroup.kvmCpusetLimit(vals[0])
+                            cpuset.cpusetlimit(vals[1])
+                    elif modules[3] == 'unset':
+                        uncpuset = openstack_cgroup.kvmCpusetLimit(modules[4])
+                        uncpuset.cpusetunset()
+                    else:
+                        self.send_error(404, "api not found")
+                elif modules[2] == 'memory':
+                    if modules[3] == 'set':
+                        vals = modules[4].split("&")
+                        if len(vals) == 2:
+                            mem = openstack_cgroup.kvmMemLimit(vals[0])
+                            mem.memlimit(vals[1])
+                    elif modules[3] == 'unset':
+                        unmem = openstack_cgroup.kvmMemLimit(modules[4])
+                        unmem.memunset()
+                    else:
+                        self.send_error(404, "api not found")
+                elif modules[2] == 'blkio':
+                    if modules[3] == 'set':
+                        vals = modules[4].split("&")
+                        if 2 < len(vals) < 5:
+                            disk = openstack_cgroup.kvmDiskLimit(vals[0])
+                            if vals[1] == 'read':
+                                if len(vals)== 3:
+                                    disk.diskreadlimit(int(vals[2]))
+                                else:
+                                    vals[3]=vals[3].replace("%2F", "/")
+                                    disk.diskreadlimit(int(vals[2]),vals[3])
+                            elif vals[1] == 'write':
+                                if len(vals) == 3:
+                                    disk.diskwritelimit(int(vals[2]))
+                                else:
+                                    vals[3]=vals[3].replace("%2F", "/")
+                                    disk.diskwritelimit(int(vals[2]), vals[3])
+                    elif modules[3] == 'unset':
+                        vals = modules[4].split('&')
+                        if 1 < len(vals) < 4:
+                            undisk = openstack_cgroup.kvmDiskLimit(vals[0])
+                            if vals[1] == 'read':
+                                if len(vals) == 3:
+                                    vals[2]=vals[2].replace("%2F", "/")
                                     undisk.diskreadunset(vals[2])
                                 else:
                                     undisk.diskreadunset()
+                            if vals[1] == 'write':
+                                if len(vals) == 3:
+                                    vals[2]=vals[2].replace("%2F", "/")
+                                    undisk.diskwriteunset(vals[2])
+                                else:
+                                    undisk.diskwriteunset()
                     else:
                         self.send_error(404, "api not found")
 
@@ -121,11 +196,13 @@ class MainHandler(BaseHTTPRequestHandler):
                                 if len(vals)== 3:
                                     disk.diskreadlimit(int(vals[2]))
                                 else:
+                                    vals[3]=vals[3].replace("%2F", "/")
                                     disk.diskreadlimit(int(vals[2]),vals[3])
                             elif vals[1] == 'write':
                                 if len(vals) == 3:
                                     disk.diskwritelimit(int(vals[2]))
                                 else:
+                                    vals[3]=vals[3].replace("%2F", "/")
                                     disk.diskwritelimit(int(vals[2]), vals[3])
                     elif modules[3] == 'unset':
                         vals = modules[4].split('&')
@@ -133,14 +210,16 @@ class MainHandler(BaseHTTPRequestHandler):
                             undisk = docker_cgroup.dockerDiskLimit(vals[0])
                             if vals[1] =='read':
                                 if len(vals) == 3:
+                                    vals[2]=vals[2].replace("%2F", "/")
                                     undisk.diskreadunset(vals[2])
                                 else:
                                     undisk.diskreadunset()
                             if vals[1]=='write':
                                 if len(vals) == 3:
-                                    undisk.diskreadunset(vals[2])
+                                    vals[2]=vals[2].replace("%2F", "/")
+                                    undisk.diskwriteunset(vals[2])
                                 else:
-                                    undisk.diskreadunset()
+                                    undisk.diskwriteunset()
                     else:
                         self.send_error(404, "api not found")
             elif modules[1] == 'net':
@@ -164,7 +243,7 @@ class MainHandler(BaseHTTPRequestHandler):
             else:
                 self.wfile.write("OK")
         except IOError:
-            self.send_error(404, 'Filf Not Found')
+            self.send_error(404, 'File Not Found')
 if __name__ == '__main__':
     server = ThreadedHTTPServer(('0.0.0.0', 12345), MainHandler)
     print 'Starting server, use <Ctrl-C> to stop'

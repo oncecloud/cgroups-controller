@@ -2,15 +2,19 @@
 ## cpu
 限制使用cpu时间的百分比
 
-**kvm set：http://ip:port/kvm/cpu/set/kvmname&per**
+**openstack set：http://ip:port/openstack/cpu/set/vmname&per**
 
-**kvm unset: http://ip:port/kvm/cpu/unset/kvmname**
+**openstack unset: http://ip:port/openstack/cpu/unset/vmname**
+
+**kvm set：http://ip:port/kvm/cpu/set/vmname&per**
+
+**kvm unset: http://ip:port/kvm/cpu/unset/vmname**
 
 **docker set: http://ip:port/kvm/cpu/set/dockerid&per**
 
 **docker unset http://ip:port/docker/cpu/unset/dockerid**
 
-**kvmname**:kvm 的名称
+**vmname**: vm的名称
 
 **dockerid**: docker的id
 
@@ -18,7 +22,7 @@
 
 ## cpuset
 限制使用cpu的个数
-docker可用，kvm不可用
+docker可用，vm不可用
 
 **docker set: http://ip:port/docker/cpuset/set/dockerid&set**
 
@@ -31,27 +35,38 @@ docker可用，kvm不可用
 ## memory
 限制使用的内存的总量
 
-**kvm set：http://ip:port/kvm/memory/set/kvmname&val**
+**openstack set：http://ip:port/openstack/memory/set/vmname&val**
 
-**kvm unset: http://ip:port/kvm/memory/unset/kvmname**
+**openstack unset: http://ip:port/openstack/memory/unset/vmname**
+
+**kvm set：http://ip:port/kvm/memory/set/vmname&val**
+
+**kvm unset: http://ip:port/kvm/memory/unset/vmname**
 
 **docker set: http://ip:port/kvm/memory/set/dockerid&val**
 
 **docker unset http://ip:port/docker/memory/unset/dockerid**
 
-**kvmname**:kvm 的名称
+**vmname**: vm的名称
 
 **dockerid**: docker的id
 
-**val**:可以使用的内存总量，单位为B，例如1024576是1MB
+**val**: 可以使用的内存总量，单位为B，例如1024576是1MB
 
 ## disk
 限制磁盘的读写速度
-**kvm set：http://ip:port/kvm/blkio/set/kvmname&read&val**
 
-**kvm set：http://ip:port/kvm/blkio/set/kvmname&read&val&path**
+**openstack set：http://ip:port/openstack/blkio/set/vmname&read&val**
 
-**kvm unset: http://ip:port/kvm/blkio/unset/kvmname&&read**
+**openstack set：http://ip:port/openstack/blkio/set/vmname&read&val&path**
+
+**openstack unset: http://ip:port/openstack/blkio/unset/vmname&&read**
+
+**kvm set：http://ip:port/kvm/blkio/set/vmname&read&val**
+
+**kvm set：http://ip:port/kvm/blkio/set/vmname&read&val&path**
+
+**kvm unset: http://ip:port/kvm/blkio/unset/vmname&&read**
 
 **docker set：http://ip:port/kvm/blkio/set/dockerid&read&val**
 
@@ -59,7 +74,7 @@ docker可用，kvm不可用
 
 **docker unset: http://ip:port/kvm/blkio/unset/dockerid&&read**
 
-**kvmname**:kvm 的名称
+**vmname**: vm的名称
 
 **dockerid**: docker的id
 
@@ -73,16 +88,16 @@ docker可用，kvm不可用
 
 限制网络的上传下载速度
 
-**set:http://ip:port/net/vnet&start&upload&&download**
+**set:http://ip:port/net/start&vnet&upload&&download**
 
-**unset:http://ip:port/net/vnet&stop**
+**unset:http://ip:port/net/stop&vnet**
 
-不区分docker与kvm，需要提供对应的虚拟网卡
+不区分docker与vm，需要提供对应的虚拟网卡
 
-**vnet**: docker或者kvm所对应的虚拟网卡
+**vnet**: docker或者vm所对应的虚拟网卡
 
-**upload**：上传速度，必须同时提供上传下载速度 格式是1mb表示1MB上传速度
+**upload**：上传速度，必须同时提供上传下载速度 格式是1mbit表示1MB上传速度
 
-**download**：下载速度，必须同时提供上传下载速度 格式是1mb表示1MB上传速度
+**download**：下载速度，必须同时提供上传下载速度 格式是1mbit表示1MB下载速度
 
 
