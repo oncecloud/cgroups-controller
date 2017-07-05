@@ -28,8 +28,8 @@ class kvmCpuLimit(kvmCgroup):
     def cpulimit(self, percentage):
         if not self.cgroup:
             raise NoSuchKVMError("No such vm found: " + self.kvmname)
-        if int(percentage) < 0 or int(percentage) > 100:
-            raise ValOutofRanege("The percentage value out of range:  " + percentage)
+#         if int(percentage) < 0 or int(percentage) > 100:
+#             raise ValOutofRanege("The percentage value out of range:  " + percentage)
         self.set_config('cfs_quota_us', 1000*int(percentage))
     def cpuunset(self):
         self.set_config('cfs_quota_us', -1)
