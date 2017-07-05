@@ -23,12 +23,12 @@ class kvmCgroup(cgroup.CGroup):
 class kvmCpuLimit(kvmCgroup):
     def __init__(self, kvmname):
         kvmCgroup.__init__(self, kvmname, 'cpu')
-    def cpulimit(self, percentage):
+    def cpulimit(self, priority):
         if not self.cgroup:
             raise NoSuchKVMError("No such vm found: " + self.kvmname)
-        if int(percentage) < 0 or int(percentage) > 100:
-            raise ValOutofRanege("The percentage value out of range:  " + percentage)
-        self.set_config('cfs_period_us', 100*int(percentage))
+        if int(priority) < 0 or int(priority) > 100:
+            raise ValOutofRanege("The priority value out of range:  " + priority)
+        self.set_config('cfs_period_us', 100*int(priority))
     def cpuunset(self):
         self.set_config('cfs_period_us', 10000)
 

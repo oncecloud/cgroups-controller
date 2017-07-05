@@ -106,6 +106,17 @@ class MainHandler(BaseHTTPRequestHandler):
                         uncpuset.cpusetunset()
                     else:
                         self.send_error(404, "api not found")
+                elif modules[2] == 'cpuPriority':
+                    if modules[3] == 'set':
+                        vals = modules[4].split("&")
+                        if len(vals) == 2:
+                            cpuset = openstack_cgroup.kvmCpuPriority(vals[0])
+                            cpuset.cpuPriority(vals[0], vals[1])
+                    elif modules[3] == 'unset':
+                        uncpuset = openstack_cgroup.kvmCpuPriority(modules[4])
+                        uncpuset.cpuunsetPriority(modules[4])
+                    else:
+                        self.send_error(404, "api not found")
                 elif modules[2] == 'memory':
                     if modules[3] == 'set':
                         vals = modules[4].split("&")

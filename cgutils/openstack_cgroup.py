@@ -33,6 +33,16 @@ class kvmCpuLimit(kvmCgroup):
         self.set_config('cfs_quota_us', 1000*int(percentage))
     def cpuunset(self):
         self.set_config('cfs_quota_us', -1)
+        
+class kvmCpuPriority(kvmCgroup):
+    def __init__(self, kvmname):
+        kvmCgroup.__init__(self, kvmname, 'cpu')
+    def cpuPriority(self, kvmname, priority):
+        if not self.cgroup:
+            raise NoSuchKVMError("No such vm found: " + self.kvmname)
+        print os.popen('virsh schedinfo %s --set cpu_shares=%s' %(kvmname, priority)).readlines()
+    def cpuunsetPriority(self, kvmname):
+        os.popen('virsh schedinfo %s --set cpu_shares=%s' %(kvmname, "8192"))
 
 class kvmCpusetLimit(kvmCgroup):
     def __init__(self, kvmname):
