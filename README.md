@@ -32,6 +32,18 @@ docker可用，vm不可用
 
 **set**: 可以使用的cpu序号，如1,2,3或者1-3或者1-3,9-12
 
+## cpu
+限制虚拟机的CPU使用优先级，默认是8192
+OpenStack VM可用
+
+**openstack set：http://ip:port/openstack/cpuPriority/set/vmname&val**
+
+**openstack unset: http://ip:port/openstack/cpuPriority/unset/vmname**
+
+**vmname**: vm的名称
+
+**val**:cpu优先级数值，默认值是8192，当前值请用virsh schedinfo <vmname>查看cpu_shares属性
+
 ## memory
 限制使用的内存的总量
 
