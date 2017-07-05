@@ -32,7 +32,7 @@ docker可用，vm不可用
 
 **set**: 可以使用的cpu序号，如1,2,3或者1-3或者1-3,9-12
 
-## cpu
+## cpuPriority
 限制虚拟机的CPU使用优先级，默认是8192
 OpenStack VM可用
 
