@@ -34,6 +34,7 @@ docker可用，vm不可用
 
 ## cpuPriority
 限制虚拟机的CPU使用优先级，默认是 **当前VCPU个数*1024**
+
 OpenStack VM可用
 
 **openstack set：http://ip:port/openstack/cpuPriority/set/vmname&val**
