@@ -25,12 +25,14 @@ class kvmCgroup(cgroup.CGroup):
 class kvmCpuLimit(kvmCgroup):
     def __init__(self, kvmname):
         kvmCgroup.__init__(self, kvmname, 'cpu')
-    def cpulimit(self, percentage):
+    def cpulimit(self, kvmname, percentage):
         if not self.cgroup:
             raise NoSuchKVMError("No such vm found: " + self.kvmname)
 #         if int(percentage) < 0 or int(percentage) > 100:
 #             raise ValOutofRanege("The percentage value out of range:  " + percentage)
-        self.set_config('cfs_quota_us', 1000*int(percentage))
+        current_cpu_num = os.popen('virsh dominfo %s | grep CPU | head -n 1 | awk \'{print $2}\'' %(kvmname)).readlines()
+        print os.popen('virsh schedinfo %s --set vcpu_quota=%s' %(kvmname, percentage)).readlines()
+#         self.set_config('cfs_quota_us', 1000*int(percentage))
     def cpuunset(self):
         self.set_config('cfs_quota_us', -1)
         
@@ -42,7 +44,7 @@ class kvmCpuPriority(kvmCgroup):
             raise NoSuchKVMError("No such vm found: " + self.kvmname)
         print os.popen('virsh schedinfo %s --set cpu_shares=%s' %(kvmname, priority)).readlines()
     def cpuunsetPriority(self, kvmname):
-        os.popen('virsh schedinfo %s --set cpu_shares=%s' %(kvmname, "8192"))
+        os.popen('virsh schedinfo %s --set cpu_shares=%s' %(kvmname, "-1"))
 
 class kvmCpusetLimit(kvmCgroup):
     def __init__(self, kvmname):

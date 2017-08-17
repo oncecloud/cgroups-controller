@@ -89,7 +89,7 @@ class MainHandler(BaseHTTPRequestHandler):
                         vals = modules[4].split("&")
                         if len(vals) == 2:
                             cpu = openstack_cgroup.kvmCpuLimit(vals[0])
-                            cpu.cpulimit(vals[1])
+                            cpu.cpulimit(vals[0], vals[1])
                     elif modules[3] == 'unset':
                         uncpu = openstack_cgroup.kvmCpuLimit(modules[4])
                         uncpu.cpuunset()
