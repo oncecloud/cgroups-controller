@@ -103,7 +103,7 @@ class MainHandler(BaseHTTPRequestHandler):
                             cpuset.cpusetlimit(vals[1])
                     elif modules[3] == 'unset':
                         uncpuset = openstack_cgroup.kvmCpusetLimit(modules[4])
-                        uncpuset.cpusetunset()
+                        uncpuset.cpusetunset(modules[4])
                     else:
                         self.send_error(404, "api not found")
                 elif modules[2] == 'cpuPriority':
@@ -126,6 +126,17 @@ class MainHandler(BaseHTTPRequestHandler):
                     elif modules[3] == 'unset':
                         unmem = openstack_cgroup.kvmMemLimit(modules[4])
                         unmem.memunset()
+                    else:
+                        self.send_error(404, "api not found")
+                elif modules[2] == 'memoryMinGuarantee':
+                    if modules[3] == 'set':
+                        vals = modules[4].split("&")
+                        if len(vals) == 2:
+                            mem = openstack_cgroup.kvmMemMinGuaranteeLimit(vals[0])
+                            mem.memlimit(vals[0], vals[1])
+                    elif modules[3] == 'unset':
+                        unmem = openstack_cgroup.kvmMemMinGuaranteeLimit(modules[4])
+                        unmem.memunset(modules[4])
                     else:
                         self.send_error(404, "api not found")
                 elif modules[2] == 'blkio':

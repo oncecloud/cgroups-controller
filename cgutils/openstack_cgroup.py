@@ -30,11 +30,12 @@ class kvmCpuLimit(kvmCgroup):
             raise NoSuchKVMError("No such vm found: " + self.kvmname)
 #         if int(percentage) < 0 or int(percentage) > 100:
 #             raise ValOutofRanege("The percentage value out of range:  " + percentage)
-        current_cpu_num = os.popen('virsh dominfo %s | grep CPU | head -n 1 | awk \'{print $2}\'' %(kvmname)).readlines()
-        print os.popen('virsh schedinfo %s --set vcpu_quota=%s' %(kvmname, percentage)).readlines()
+        current_cpu_num = os.popen('virsh dominfo %s | grep CPU | head -n 1 | awk \'{print $2}\'' %(kvmname)).readlines()[0].strip()
+        setval = 100000 / (float(current_cpu_num) / (int(percentage) / 100))
+        print os.popen('virsh schedinfo %s --set vcpu_quota=%s' %(kvmname, int(setval))).readlines()
 #         self.set_config('cfs_quota_us', 1000*int(percentage))
-    def cpuunset(self):
-        self.set_config('cfs_quota_us', -1)
+    def cpuunset(self, kvmname):
+        print os.popen('virsh schedinfo %s --set vcpu_quota=%s' %(kvmname, "-1")).readlines()
         
 class kvmCpuPriority(kvmCgroup):
     def __init__(self, kvmname):
@@ -44,7 +45,8 @@ class kvmCpuPriority(kvmCgroup):
             raise NoSuchKVMError("No such vm found: " + self.kvmname)
         print os.popen('virsh schedinfo %s --set cpu_shares=%s' %(kvmname, priority)).readlines()
     def cpuunsetPriority(self, kvmname):
-        os.popen('virsh schedinfo %s --set cpu_shares=%s' %(kvmname, "-1"))
+        current_cpu_num = os.popen('virsh dominfo %s | grep CPU | head -n 1 | awk \'{print $2}\'' %(kvmname)).readlines()[0].strip()
+        os.popen('virsh schedinfo %s --set cpu_shares=%s' %(kvmname, "%s" %(int(current_cpu_num) * 1024)))
 
 class kvmCpusetLimit(kvmCgroup):
     def __init__(self, kvmname):
@@ -94,6 +96,22 @@ class kvmMemLimit(kvmCgroup):
         if not self.cgroup:
             raise NoSuchKVMError("No such vm found: " + self.kvmname)
         self.set_config('limit_in_bytes', -1)
+
+class kvmMemMinGuaranteeLimit(kvmCgroup):
+    def __init__(self, kvmname):
+        kvmCgroup.__init__(self, kvmname, 'memory')
+    def memlimit(self, kvmname, memory):
+        if not self.cgroup:
+            raise NoSuchKVMError("No such vm found: " + self.kvmname)
+        memory = int(memory) / 1024
+        memmax = os.popen('virsh dominfo %s | grep Max | awk \'{print $3}\'' %(kvmname)).readlines()[0].strip()
+        if memory > memmax:
+            raise ValOutofRanege("Memory out of range: " + memory + " KB.")
+        print os.popen('virsh memtune %s --min-guarantee %s --live' %(kvmname, memory)).readlines()
+    def memunset(self, kvmname):
+        if not self.cgroup:
+            raise NoSuchKVMError("No such vm found: " + self.kvmname)
+        os.popen('virsh memtune %s --min-guarantee %s --live' %(kvmname, "-1")).readlines()
 
 class kvmDiskLimit(kvmCgroup):
     def __init__(self, kvmname):
