@@ -31,7 +31,7 @@ class kvmCpuLimit(kvmCgroup):
 #         if int(percentage) < 0 or int(percentage) > 100:
 #             raise ValOutofRanege("The percentage value out of range:  " + percentage)
         current_cpu_num = os.popen('virsh dominfo %s | grep CPU | head -n 1 | awk \'{print $2}\'' %(kvmname)).readlines()[0].strip()
-        setval = 100000 / (float(current_cpu_num) / (int(percentage) / 100))
+        setval = 100000 / (float(current_cpu_num) / (float(percentage) / 100))
         print os.popen('virsh schedinfo %s --set vcpu_quota=%s' %(kvmname, int(setval))).readlines()
 #         self.set_config('cfs_quota_us', 1000*int(percentage))
     def cpuunset(self, kvmname):
