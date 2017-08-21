@@ -92,7 +92,7 @@ class MainHandler(BaseHTTPRequestHandler):
                             cpu.cpulimit(vals[0], vals[1])
                     elif modules[3] == 'unset':
                         uncpu = openstack_cgroup.kvmCpuLimit(modules[4])
-                        uncpu.cpuunset()
+                        uncpu.cpuunset(modules[4])
                     else:
                         self.send_error(404, "api not found")
                 elif modules[2] == 'cpuset':
